@@ -15,6 +15,7 @@ function streamHash(input, options = {}) {
     let filePath = null
     let fileName = null
     let ext = null
+    let size = 0
 
     if (options.fileName) {
       ext = path.extname(options.fileName)
@@ -25,7 +26,11 @@ function streamHash(input, options = {}) {
 
     input.on('data', chunk => {
       shasum.update(chunk)
-      if (output) output.write(chunk)
+      
+      if (output) {
+        size += chunk.length
+        output.write(chunk)
+      }
     })
 
     input.on('end', () => {
@@ -41,8 +46,8 @@ function streamHash(input, options = {}) {
           } else {
             resolve({
               shasum: shatext,
-              fileName: shatext + ext,
-              ext
+              name: shatext + ext,
+              size
             })
           }
         })
