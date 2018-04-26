@@ -35,7 +35,7 @@ function streamHash(input, options = {}) {
         output.end()
         const newPath = filePath.replace(fileName, shatext + ext)
 
-        fs.rename(fileName, newPath, (err) => {
+        fs.rename(filePath, newPath, (err) => {
           if (err) {
             reject(err)
           } else {
