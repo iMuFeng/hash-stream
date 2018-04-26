@@ -19,13 +19,12 @@ function streamHash(input, options = {}) {
     if (options.fileName) {
       ext = path.extname(options.fileName)
       fileName = randomString(48) + ext
-      filePath = options.baseDir ? options.baseDir + fileName : fileName
+      filePath = options.baseDir ? options.baseDir + '/' + fileName : fileName
       output = fs.createWriteStream(filePath)
     }
 
     input.on('data', chunk => {
       shasum.update(chunk)
-
       if (output) output.write(chunk)
     })
 
@@ -34,14 +33,17 @@ function streamHash(input, options = {}) {
 
       if (output) {
         output.end()
-
         const newPath = filePath.replace(fileName, shatext + ext)
 
         fs.rename(fileName, newPath, (err) => {
           if (err) {
             reject(err)
           } else {
-            resolve(shatext)
+            resolve({
+              shasum: shatext,
+              fileName: shatext + ext,
+              ext
+            })
           }
         })
       } else {
